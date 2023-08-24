@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width" />
+
+    <title>SpeakForMe</title>
+
+    <style>
+        .wordButton {
+            font-size: 36pt;
+            margin: 5px;
+        }
+
+        #txt {
+            text-align: center;
+            padding: 0;
+            background-color: #E2E2E2;
+            width: 100%;
+            height: 1.4em;
+            font-size: 36pt;
+            white-space: nowrap;
+            border: solid 1px black;
+        }
+    </style>
+  </head>
+
+  <body>
+    <div id="txt" contenteditable="true" wrap="off" rows="1">
+Speak for me.
+    </div>
+
+    <div id="wordButtons">
+    </div>
+
+    <script>
+        const synth = window.speechSynthesis;
+
+        const inputForm = document.querySelector("form");
+        const inputTxt = document.querySelector("#txt");
+        const wordButtons = document.querySelector("#wordButtons");
+
+        const pitch = document.querySelector("#pitch");
+        const rate = document.querySelector("#rate");
+
+        document.body.addEventListener("keypress", (e) =>
+        {
+            if (e.key == "Enter")
+            {
+                const text = inputTxt.textContent.trim();
+                
+                speak(text);
+
+                selectAll(inputTxt);
+
+                e.preventDefault();
+            }
+        })
+
+        function speakWord(e) {
+            const text = e.target.textContent;
+            speak(text);
+            e.target.blur();
+        }
+
+        function createWords() {
+            const words = ["Yes", "No", "I don't know"];
+            
+            words.forEach(i => {
+                var b = document.createElement("button");
+                b.classList.add("wordButton");
+                b.innerText = i;
+                b.addEventListener("click", speakWord);
+                wordButtons.appendChild(b);
+            });
+        }
+
+        function selectAll(element) {
+            var sel, range;
+            if (window.getSelection && document.createRange) {
+                range = document.createRange();
+                range.selectNodeContents(element);
+                sel = window.getSelection();
+                sel.removeAllRanges();
+                sel.addRange(range);
+            } else if (document.body.createTextRange) {
+                range = document.body.createTextRange();
+                range.moveToElementText(element);
+                range.select();
+            }
+        }
+
+        let voices = [];
+        let voice;
+
+        function populateVoiceList() {
+            voices = synth.getVoices();
+
+            voice = voices.find(i => i.name === "Google US English");
+                
+            if (!voice) {
+                voice = voices.find(i => i.name.startsWith("Microsoft Zira"))
+
+                if (!voice) {
+                    voice = voices[0];
+                }
+            }
+        }
+
+        createWords();
+
+        populateVoiceList();
+
+        if (speechSynthesis.onvoiceschanged !== undefined) {
+            speechSynthesis.onvoiceschanged = populateVoiceList;
+        }
+
+        function speak(text) {
+            if (voices.length < 1) {
+                alert("It appears your browser does not have any voices.  Try installing Google Chrome.");
+                return;
+            }
+
+            if (synth.speaking) {
+                synth.cancel();
+            }
+
+            if (text !== "") {
+                const utterThis = new SpeechSynthesisUtterance(text);
+
+                utterThis.onend = function (event) {
+                    console.log("SpeechSynthesisUtterance.onend");
+                };
+
+                utterThis.onerror = function (event) {
+                    console.log("SpeechSynthesisUtterance.onerror");
+                };
+
+                utterThis.voice = voice;
+                
+                synth.speak(utterThis);
+            }
+        }
+    </script>
+  </body>
+</html>
