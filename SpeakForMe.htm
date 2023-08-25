@@ -105,13 +105,21 @@
         function populateVoiceList() {
             voices = synth.getVoices();
 
+            // Google Chrome
             voice = voices.find(i => i.name === "Google US English");
                 
             if (!voice) {
+                // Microsoft Windows
                 voice = voices.find(i => i.name.startsWith("Microsoft Zira"))
 
+                // Firefox
                 if (!voice) {
-                    voice = voices[0];
+                    voice = voices.find(i => i.name.startsWith("English (USA)"))
+
+                    // Everything else
+                    if (!voice) {
+                        voice = voices[0];
+                    }
                 }
             }
         }
