@@ -80,6 +80,7 @@
             align-items: center;
             width: 65px;
             height: 65px;
+            cursor: pointer;
         }
     </style>
   </head>
@@ -116,6 +117,12 @@
         <button onclick="uploadPhraseData()" class="actionButton">
             <svg width="30" height="30" viewBox="0 0 1024 1024" style="transform: rotate(180deg);"><path d="M512 791.466667L277.333333 512h469.333334zM426.666667 85.333333h170.666666v85.333334h-170.666666zM426.666667 213.333333h170.666666v85.333334h-170.666666z" fill="#1565C0" /><path d="M426.666667 341.333333h170.666666v234.666667h-170.666666zM128 853.333333h768v85.333334H128z" fill="#1565C0" /></svg>
             <span>Upload<br/>Phrases</span>
+        </button>
+        <button onclick="resetPhraseData()" class="actionButton">
+            <svg width="30" height="30" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M2 10C2 10 2.12132 9.15076 5.63604 5.63604C9.15076 2.12132 14.8492 2.12132 18.364 5.63604C19.6092 6.88131 20.4133 8.40072 20.7762 10M2 10V4M2 10H8M22 14C22 14 21.8787 14.8492 18.364 18.364C14.8492 21.8787 9.15076 21.8787 5.63604 18.364C4.39076 17.1187 3.58669 15.5993 3.22383 14M22 14V20M22 14H16" stroke="green" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+            <span>Reset<br/>Phrases</span>
         </button>
     </div>
 
@@ -191,6 +198,29 @@
             }
         }
 
+        function resetPhraseData() {
+            phraseData = {
+                "Simple": [
+                    "No", "Yes", "I don't know", "OK", 
+                ],
+                "Common": [
+                    "I'm OK", "That's good", "Thank you", 
+                ],
+                "Requests": [
+                    "I'm thirsty", "I'm hungry", "I'm tired", 
+                ],
+                "Concern": [
+                    "I'm in pain", "I'm uncomfortable", "Please call 911"
+                ],
+                "Greetings": [
+                    "Hello", "Goodbye", "Good morning", "Good afternoon", "Good evening"
+                ]
+            };
+            localStorage.setItem("phraseData", JSON.stringify(phraseData))
+
+            loadPhraseData();
+        }
+
         function createPhraseCategory(categoryName, phrases, className)
         {
             let container = document.createElement("div");
@@ -228,24 +258,7 @@
                 phraseData = JSON.parse(phraseDataJson);
             }
             catch (e) {
-                phraseData = {
-                    "Simple": [
-                        "I don't know", "OK", "No", "Yes",
-                    ],
-                    "Common": [
-                        "I'm OK", "That's good", "Thank you", 
-                    ],
-                    "Requests": [
-                        "I'm thirsty", "I'm hungry", "I'm tired", 
-                    ],
-                    "Concern": [
-                        "I'm in pain", "I'm uncomfortable", "Please call 911"
-                    ],
-                    "Greetings": [
-                        "Hello", "Goodbye", "Good morning", "Good afternoon", "Good evening"
-                    ]
-                };
-                localStorage.setItem("phraseData", JSON.stringify(phraseData))
+                resetPhraseData();
             }
 
             let i = 0;
