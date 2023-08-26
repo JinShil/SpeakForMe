@@ -199,6 +199,10 @@
         }
 
         function resetPhraseData() {
+            if (!confirm("Are you sure?")) {
+                return;
+            }
+            
             phraseData = {
                 "Simple": [
                     "No", "Yes", "I don't know", "OK", 
