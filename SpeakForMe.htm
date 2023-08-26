@@ -138,6 +138,10 @@
             "I'm in pain", "I'm uncomfortable", "Please call 911"
         ]
 
+        const greetingPhrases = [
+            "Hello", "Goodbye", "Good morning", "Good afternnoon", "Good evening"
+        ]
+
         function createPhraseCategory(categoryName, phrases, className)
         {
             let container = document.createElement("div");
@@ -169,6 +173,7 @@
         createPhraseCategory("Simple", simplePhrases, "alignRight");
         createPhraseCategory("Concern", concernPhrases, "alignLeft");
         createPhraseCategory("Requests", requestPhrases, "alignRight");
+        createPhraseCategory("Greetings", greetingPhrases, "alignLeft");
 
         function speakWord(e) {
             const text = e.target.textContent;
