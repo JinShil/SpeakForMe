@@ -27,7 +27,7 @@
 
         .phraseCaption {
             color: #808080;
-            font-size: 150%;
+            font-size: 125%;
             display: flex;
         }
 
@@ -73,11 +73,19 @@
             color: #A0A0A0;
             opacity: 1;
         }
+
+        .actionButton {
+            display: flex; 
+            flex-direction: column; 
+            align-items: center;
+            width: 65px;
+            height: 65px;
+        }
     </style>
   </head>
 
   <body>
-    <div style="display: grid; grid-template-columns: 1fr auto auto; gap: 5px;">
+    <div style="display: grid; grid-template-columns: 1fr auto; gap: 5px;">
         <input id="txt" class="largeFont" type="text" placeholder="Type here and press &quot;Enter&quot;" autofocus />
         <button style="padding: 0; border: none; cursor: pointer;" onclick="clearText(event);">
             <svg width="50" height="50" viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg">
@@ -95,6 +103,20 @@
     </div>
 
     <div id="phraseButtons">
+    </div>
+
+    <div>&nbsp;</div>
+
+    <div style="flex-shrink: 1; display: flex; gap: 5px;">
+        <button onclick="downloadPhraseData();" class="actionButton">
+            <svg width="30" height="30" viewBox="0 0 1024 1024"><path d="M512 791.466667L277.333333 512h469.333334zM426.666667 85.333333h170.666666v85.333334h-170.666666zM426.666667 213.333333h170.666666v85.333334h-170.666666z" fill="#1565C0" /><path d="M426.666667 341.333333h170.666666v234.666667h-170.666666zM128 853.333333h768v85.333334H128z" fill="#1565C0" /></svg>
+            <span>Download<br/>Phrases</span>
+        </button>
+        <input type="file" id="uploadInput" style="display: none;" onchange="readUploadedFile(event)">
+        <button onclick="uploadPhraseData()" class="actionButton">
+            <svg width="30" height="30" viewBox="0 0 1024 1024" style="transform: rotate(180deg);"><path d="M512 791.466667L277.333333 512h469.333334zM426.666667 85.333333h170.666666v85.333334h-170.666666zM426.666667 213.333333h170.666666v85.333334h-170.666666z" fill="#1565C0" /><path d="M426.666667 341.333333h170.666666v234.666667h-170.666666zM128 853.333333h768v85.333334H128z" fill="#1565C0" /></svg>
+            <span>Upload<br/>Phrases</span>
+        </button>
     </div>
 
     <script>
@@ -123,25 +145,51 @@
             inputTxt.focus();
         }
 
-        const simplePhrases = [
-            "I don't know", "OK", "No", "Yes",
-        ]
+        function downloadPhraseData() {
+            let phraseDataJson = localStorage.getItem("phraseData");
+            if (!phraseDataJson) {
+                throw new Error("`phraseData` was not found");
+            }
+            let phraseData = JSON.parse(phraseDataJson);
 
-        const commonPhrases = [
-            "I'm OK", "That's good", "Thank you", 
-        ]
+            const jsonContent = JSON.stringify(phraseData, null, 2);
+            const blob = new Blob([jsonContent], { type: "application/json" });
 
-        const requestPhrases = [
-            "I'm thirsty", "I'm hungry", "I'm tired", 
-        ]
+            const url = URL.createObjectURL(blob);
 
-        const concernPhrases = [
-            "I'm in pain", "I'm uncomfortable", "Please call 911"
-        ]
+            const a = document.createElement("a");
+            a.href = url;
+            a.download = "phrases.json";
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
 
-        const greetingPhrases = [
-            "Hello", "Goodbye", "Good morning", "Good afternnoon", "Good evening"
-        ]
+            URL.revokeObjectURL(url);
+        }
+
+        function uploadPhraseData() {
+            const inputElement = document.getElementById("uploadInput");
+            inputElement.value = "";
+            inputElement.click();
+        }
+
+        function readUploadedFile(e) {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(re) {
+                    const fileContent = re.target.result;
+                    try {
+                        phraseData = JSON.parse(fileContent);
+                        localStorage.setItem("phraseData", JSON.stringify(phraseData))
+                        loadPhraseData();
+                    } catch (error) {
+                        alert("Error parsing JSON: " + error);
+                    }
+                };
+                reader.readAsText(file);
+            }
+        }
 
         function createPhraseCategory(categoryName, phrases, className)
         {
@@ -170,11 +218,45 @@
             });
         }
 
-        createPhraseCategory("Common", commonPhrases, "alignLeft");
-        createPhraseCategory("Simple", simplePhrases, "alignRight");
-        createPhraseCategory("Concern", concernPhrases, "alignLeft");
-        createPhraseCategory("Requests", requestPhrases, "alignRight");
-        createPhraseCategory("Greetings", greetingPhrases, "alignLeft");
+        function loadPhraseData() {
+            let phraseData = null;
+            try {
+                let phraseDataJson = localStorage.getItem("phraseData");
+                if (!phraseDataJson) {
+                    throw new Error("`phraseData` was not found");
+                }
+                phraseData = JSON.parse(phraseDataJson);
+            }
+            catch (e) {
+                phraseData = {
+                    "Simple": [
+                        "I don't know", "OK", "No", "Yes",
+                    ],
+                    "Common": [
+                        "I'm OK", "That's good", "Thank you", 
+                    ],
+                    "Requests": [
+                        "I'm thirsty", "I'm hungry", "I'm tired", 
+                    ],
+                    "Concern": [
+                        "I'm in pain", "I'm uncomfortable", "Please call 911"
+                    ],
+                    "Greetings": [
+                        "Hello", "Goodbye", "Good morning", "Good afternoon", "Good evening"
+                    ]
+                };
+                localStorage.setItem("phraseData", JSON.stringify(phraseData))
+            }
+
+            let i = 0;
+            phraseButtons.innerHTML = "";
+            for(c in phraseData) {
+                createPhraseCategory(c, phraseData[c], i % 2 ? "alignRight" : "alignLeft");
+                i++;
+            }
+        }
+
+        loadPhraseData();
 
         function speakWord(e) {
             const text = e.target.textContent;
