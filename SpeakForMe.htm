@@ -13,7 +13,7 @@
             gap: 5px;
         }
 
-        #wordButtons {
+        #phraseButtons {
             display: grid;
             grid-template-columns: 1fr 1fr;
             gap: 5px;
@@ -50,7 +50,7 @@
             border-width: 1px;
         }
 
-        .wordButton {
+        .phraseButton {
             white-space: nowrap;
         }
 
@@ -94,7 +94,7 @@
         </button>
     </div>
 
-    <div id="wordButtons">
+    <div id="phraseButtons">
     </div>
 
     <script>
@@ -102,7 +102,7 @@
 
         const inputForm = document.querySelector("form");
         const inputTxt = document.querySelector("#txt");
-        const wordButtons = document.querySelector("#wordButtons");
+        const phraseButtons = document.querySelector("#phraseButtons");
 
         document.body.addEventListener("keypress", (e) =>
         {
@@ -147,7 +147,7 @@
         {
             let container = document.createElement("div");
             container.classList.add("phrases");
-            wordButtons.appendChild(container);
+            phraseButtons.appendChild(container);
 
             let caption = document.createElement("div");
             caption.classList.add("phraseCaption");
@@ -155,18 +155,18 @@
             caption.textContent = categoryName;
             container.appendChild(caption);
 
-            let phraseButtons = document.createElement("div");
-            phraseButtons.classList.add("phraseButtons");
-            phraseButtons.classList.add(className);
-            container.appendChild(phraseButtons);
+            let buttons = document.createElement("div");
+            buttons.classList.add("phraseButtons");
+            buttons.classList.add(className);
+            container.appendChild(buttons);
 
             phrases.forEach(i => {
                 let b = document.createElement("button");
-                b.classList.add("wordButton");
+                b.classList.add("phraseButton");
                 b.classList.add("largeFont");
                 b.innerText = i;
                 b.addEventListener("click", speakWord);
-                phraseButtons.appendChild(b);
+                buttons.appendChild(b);
             });
         }
 
