@@ -14,8 +14,34 @@
         }
 
         #wordButtons {
-            display: flex;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
             gap: 5px;
+        }
+
+        .phrases {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 5px;
+        }
+
+        .phraseCaption {
+            color: #808080;
+            font-size: 150%;
+            display: flex;
+        }
+
+        .alignLeft {
+            justify-content: flex-start;
+        }
+
+        .alignRight {
+            justify-content: flex-end;
+        }
+
+        .phraseButtons {
+            display: flex;
+            gap: 6px;
             flex-wrap: wrap;
         }
 
@@ -52,7 +78,6 @@
   <body>
     <div style="display: grid; grid-template-columns: 1fr auto auto; gap: 5px;">
         <input id="txt" class="largeFont" type="text" placeholder="Type here and press &quot;Enter&quot;" autofocus />
-        <!-- <button class="largeFont" style="color: blue;" onclick="inputTxt.value=''">Clear</button> -->
         <button style="padding: 0; border: none; cursor: pointer;" onclick="clearText(event);">
             <svg width="50" height="50" viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg">
                 <defs>
@@ -97,24 +122,58 @@
             inputTxt.focus();
         }
 
-        function speakWord(e) {
-            const text = e.target.textContent;
-            speak(text);
-            e.target.blur();
-        }
+        const simplePhrases = [
+            "I don't know", "OK", "No", "Yes",
+        ]
 
-        function createWords() {
-            const words = ["Yes", "No", "I don't know", "OK", "Thank you", "I'm in pain", "I'm uncomfortable", "That's good", "Please call 911"
-                , "I'm thirsty", "I'm hungry", "I'm tired", "I'm OK"];
-            
-            words.forEach(i => {
-                var b = document.createElement("button");
+        const commonPhrases = [
+            "I'm OK", "That's good", "Thank you", 
+        ]
+
+        const requestPhrases = [
+            "I'm thirsty", "I'm hungry", "I'm tired", 
+        ]
+
+        const concernPhrases = [
+            "I'm in pain", "I'm uncomfortable", "Please call 911"
+        ]
+
+        function createPhraseCategory(categoryName, phrases, className)
+        {
+            let container = document.createElement("div");
+            container.classList.add("phrases");
+            wordButtons.appendChild(container);
+
+            let caption = document.createElement("div");
+            caption.classList.add("phraseCaption");
+            caption.classList.add(className);
+            caption.textContent = categoryName;
+            container.appendChild(caption);
+
+            let phraseButtons = document.createElement("div");
+            phraseButtons.classList.add("phraseButtons");
+            phraseButtons.classList.add(className);
+            container.appendChild(phraseButtons);
+
+            phrases.forEach(i => {
+                let b = document.createElement("button");
                 b.classList.add("wordButton");
                 b.classList.add("largeFont");
                 b.innerText = i;
                 b.addEventListener("click", speakWord);
-                wordButtons.appendChild(b);
+                phraseButtons.appendChild(b);
             });
+        }
+
+        createPhraseCategory("Common", commonPhrases, "alignLeft");
+        createPhraseCategory("Simple", simplePhrases, "alignRight");
+        createPhraseCategory("Concern", concernPhrases, "alignLeft");
+        createPhraseCategory("Requests", requestPhrases, "alignRight");
+
+        function speakWord(e) {
+            const text = e.target.textContent;
+            speak(text);
+            e.target.blur();
         }
 
         let voices = [];
@@ -141,8 +200,6 @@
                 }
             }
         }
-
-        createWords();
 
         populateVoiceList();
 
