@@ -343,10 +343,16 @@
                 if (!voice) {
                     voice = voices.find(i => i.name.startsWith("English (USA)"))
 
-                    // Everything else
+                    // ipad
                     if (!voice) {
-                        voice = voices[0];
+                        voice = voices.find(i => i.name.startsWith("Samantha"));
+
+                        // Everything else
+                        if (!voice) {
+                            voice = voices[0];
+                        }
                     }
+                    
                 }
             }
         }
