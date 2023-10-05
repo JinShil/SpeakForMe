@@ -326,8 +326,11 @@
             voices.forEach(i => 
             {
                 var d = document.getElementById("voices");
-                d.innerHTML = i.innerHTML + ", " + i.name;
+                d.innerHTML = d.innerHTML + ", " + i.name;
             });
+
+            var dd = document.getElementById("voices");
+            dd.innerHTML = dd.innerHTML + voices.length;
 
             // Google Chrome
             voice = voices.find(i => i.name === "Google US English");
