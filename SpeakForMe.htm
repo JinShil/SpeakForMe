@@ -103,6 +103,8 @@
 
     <div>&nbsp;</div>
 
+    <div id="voices"></div>
+
     <div style="flex-shrink: 1; display: flex; gap: 5px;">
         <button onclick="downloadPhraseData();" class="actionButton">
             <svg width="30" height="30" viewBox="0 0 1024 1024"><path d="M512 791.466667L277.333333 512h469.333334zM426.666667 85.333333h170.666666v85.333334h-170.666666zM426.666667 213.333333h170.666666v85.333334h-170.666666z" fill="#1565C0" /><path d="M426.666667 341.333333h170.666666v234.666667h-170.666666zM128 853.333333h768v85.333334H128z" fill="#1565C0" /></svg>
@@ -320,6 +322,12 @@
 
         function populateVoiceList() {
             voices = synth.getVoices();
+
+            voices.forEach(i => 
+            {
+                var d = document.getElementById("voices");
+                d.innerHTML = i.innerHTML + ", " + i.name;
+            });
 
             // Google Chrome
             voice = voices.find(i => i.name === "Google US English");
